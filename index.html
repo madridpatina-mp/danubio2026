@@ -5794,6 +5794,8 @@ let _tPlayerName = '';
 let _tStartTime = 0;
 
 // ── LEADERBOARD (localStorage) ────────────────────────────────────────────────
+var LB_URL = "https://script.google.com/macros/s/AKfycbwh30BCuuJ_tuNyqdWJthQuzIL077zDb_eXMApnJNq70vKSmSNA_IC6cPLzTW8CTIFT/exec";
+var _lbCache = null;
 function getLB() {
   try {
     return JSON.parse(localStorage.getItem('danubio_lb') || '[]');
@@ -5802,27 +5804,39 @@ function getLB() {
 function saveLB(data) {
   try { localStorage.setItem('danubio_lb', JSON.stringify(data)); } catch(e){}
 }
-function renderLB() {
-  var data = getLB().sort(function(a,b){return b.score-a.score;}).slice(0,15);
+function renderLB(highlight) {
   var el = document.getElementById('lb-list');
-  if (!data.length) {
-    el.innerHTML = '<div style="text-align:center;color:var(--cream-d);padding:40px;font-family:\'Bogart\',serif;font-size:.9rem">Aún no hay resultados guardados. ¡Sé el primero!</div>';
-    return;
+  el.innerHTML = '<div style="text-align:center;color:var(--cream-d);padding:40px;font-family:\'Bogart\',serif;font-size:.9rem">Cargando ranking…</div>';
+  function paint(data, fromCloud) {
+    data = (data||[]).slice().sort(function(a,b){return b.score-a.score;}).slice(0,15);
+    if (!data.length) {
+      el.innerHTML = '<div style="text-align:center;color:var(--cream-d);padding:40px;font-family:\'Bogart\',serif;font-size:.9rem">Aún no hay resultados. ¡Sé el primero!</div>';
+      return;
+    }
+    var medals = ['🥇','🥈','🥉'];
+    var rowClass = ['gold','silver','bronze'];
+    el.innerHTML = data.map(function(entry, i) {
+      var rank = i < 3 ? medals[i] : (i+1);
+      var cls = i < 3 ? rowClass[i] : '';
+      var hl = (highlight && entry.name && entry.name.toUpperCase() === highlight.toUpperCase()) ? ' pop' : '';
+      return '<div class="lb-row '+cls+hl+'">'
+        +'<div class="lb-rank">'+(i<3?'<span>'+rank+'</span>':'<span class="lb-rank-num">'+rank+'</span>')+'</div>'
+        +'<div><div class="lb-name">'+entry.name+'</div>'
+        +'<div class="lb-meta">✅ '+entry.correct+'/20 correctas</div></div>'
+        +'<div><div class="lb-score">'+entry.score+'</div>'
+        +'<span class="lb-score-sub">pts</span></div>'
+        +'</div>';
+    }).join('');
   }
-  var medals = ['🥇','🥈','🥉'];
-  var rowClass = ['gold','silver','bronze'];
-  el.innerHTML = data.map(function(entry, i) {
-    var rank = i < 3 ? medals[i] : (i+1);
-    var cls = i < 3 ? rowClass[i] : '';
-    var date = entry.date ? new Date(entry.date).toLocaleDateString('es-ES',{day:'2-digit',month:'short'}) : '';
-    return '<div class="lb-row '+cls+'">'
-      +'<div class="lb-rank">'+(i<3?'<span>'+rank+'</span>':'<span class="lb-rank-num">'+rank+'</span>')+'</div>'
-      +'<div><div class="lb-name">'+entry.name+'</div>'
-      +'<div class="lb-meta">✅ '+entry.correct+'/20 correctas · '+date+'</div></div>'
-      +'<div><div class="lb-score">'+entry.score+'</div>'
-      +'<span class="lb-score-sub">pts</span></div>'
-      +'</div>';
-  }).join('');
+  if (_lbCache) { paint(_lbCache, true); return; }
+  fetch(LB_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(rows){
+      var data = rows.map(function(x){ return { name:x.nombre, score:+x.puntuacion, correct:+x.aciertos }; });
+      _lbCache = data;
+      paint(data, true);
+    })
+    .catch(function(){ paint(getLB(), false); });
 }
 
 // ── QUIZ LOGIC ────────────────────────────────────────────────────────────────
@@ -5969,22 +5983,22 @@ function showResult() {
 }
 
 function submitScore() {
+  // Guardar local como respaldo inmediato
   var lb = getLB();
   lb.push({ name: _tPlayerName, score: _tScore, correct: _tCorrect, date: Date.now() });
   lb.sort(function(a,b){return b.score-a.score;});
   saveLB(lb.slice(0,50));
-  renderLB();
+  // Enviar a la hoja de Google (ranking compartido)
+  try {
+    fetch(LB_URL, {
+      method: 'POST',
+      body: JSON.stringify({ nombre: _tPlayerName, puntuacion: _tScore, aciertos: _tCorrect })
+    }).catch(function(){});
+  } catch(e){}
   document.getElementById('test-result').style.display = 'none';
   document.getElementById('test-leaderboard').scrollIntoView({behavior:'smooth',block:'start'});
-  // Highlight new entry
-  setTimeout(function(){
-    var rows = document.querySelectorAll('.lb-row');
-    rows.forEach(function(r){
-      if (r.querySelector('.lb-name') && r.querySelector('.lb-name').textContent.toUpperCase() === _tPlayerName.toUpperCase()) {
-        r.classList.add('pop');
-      }
-    });
-  }, 500);
+  _lbCache = null;
+  renderLB(_tPlayerName);
 }
 
 function restartTest() {
