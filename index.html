@@ -271,7 +271,6 @@ font-weight:400;}
 
 /* Column widths */
 .pl-th-time,.pl-time{width:52px;white-space:nowrap;color:rgba(212,160,23,.8)!important;font-weight:700}
-.pl-th-ciudad,.pl-ciudad{width:90px;color:var(--cream-d)!important;font-size:.75rem}
 .pl-th-loc,.pl-loc{width:140px;color:var(--cream)!important}
 .pl-th-km,.pl-km{width:58px;text-align:right;white-space:nowrap;color:var(--gold-l)!important;font-weight:700}
 .pl-th-total,.pl-total{width:62px;text-align:right;white-space:nowrap;color:var(--cream-d)!important;font-size:.75rem}
@@ -1321,6 +1320,35 @@ footer{
 
 .premio-icon-img{width:46px;height:46px;object-fit:contain;filter:invert(72%) sepia(55%) saturate(420%) hue-rotate(5deg) brightness(1.05);transition:transform .3s cubic-bezier(.34,1.4,.64,1)}
 .premio-card:hover .premio-icon-img{transform:scale(1.12)}
+
+/* ── PLANNING v2: rutas, avisos, mapa ── */
+.pl-routes-box{background:rgba(212,160,23,.05);border:1px solid rgba(212,160,23,.18);border-radius:12px;padding:14px 16px;margin:0 0 14px}
+.pl-routes-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px}
+.pl-route{display:flex;flex-direction:column;gap:1px;background:#182818;border-left:3px solid var(--gold);border-radius:6px;padding:7px 12px;min-width:150px;flex:1}
+.pl-route-name{font-family:"Bogart",serif;font-weight:700;font-size:.78rem;color:var(--cream)}
+.pl-route-km{font-family:"Bogart",serif;font-weight:900;font-size:.95rem;color:var(--gold)}
+.pl-route-h{font-size:.72rem;color:var(--cream-d)}
+.pl-route-g{font-size:.68rem;color:var(--cream-d);opacity:.8}
+.pl-aviso{display:flex;gap:9px;align-items:flex-start;font-size:.8rem;line-height:1.45;padding:8px 12px;border-radius:8px;margin-top:8px}
+.pl-aviso span:first-child{font-size:1.05rem;flex-shrink:0}
+.pl-aviso-food{background:rgba(74,138,74,.12);color:var(--cream);border:1px solid rgba(74,138,74,.3)}
+.pl-aviso-info{background:rgba(74,138,176,.12);color:var(--cream);border:1px solid rgba(74,138,176,.3)}
+.pl-aviso-warn{background:rgba(192,57,43,.14);color:var(--cream);border:1px solid rgba(192,57,43,.35)}
+.pl-mapbtn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-family:"Bogart",serif;font-weight:700;font-size:.74rem;letter-spacing:.04em;color:#182418;background:var(--gold);padding:9px 16px;border-radius:100px;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.pl-mapbtn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(212,160,23,.35)}
+.pl-day-nav{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:16px}
+.pl-navbtn{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);color:var(--gold);width:42px;height:42px;border-radius:50%;font-size:1rem;cursor:pointer;transition:all .2s}
+.pl-navbtn:hover{background:var(--gold);color:#182418}
+.pl-day-indicator{font-family:"Bogart",serif;font-weight:700;font-size:.85rem;color:var(--cream);min-width:200px;text-align:center}
+.pl-day-body{overflow:hidden;max-height:0;transition:max-height .4s ease}
+.pl-day-block.open .pl-day-body{max-height:6000px}
+
+.pl-ico{width:18px;height:18px;vertical-align:-3px;margin-right:6px;filter:invert(72%) sepia(55%) saturate(420%) hue-rotate(5deg) brightness(1.05)}
+.pl-tl-con .pl-ico{width:16px;height:16px}
+
+.pl-maplink{color:var(--gold);text-decoration:none;border-bottom:1px dotted rgba(212,160,23,.5);transition:color .2s}
+.pl-maplink:hover{color:var(--gold-l);border-bottom-color:var(--gold-l)}
+.pl-pin{font-size:.8em;margin-left:4px;opacity:.85;border:none}
 </style>
 </head>
 <body>
@@ -3746,14 +3774,12 @@ footer{
 
 <!-- PLANNING -->
 <section id="planning" class="sec-full" style="scroll-margin-top:60px">
-  <div class="sec-inner">
-    <div class="sec-hd">
-      <span class="sec-label">Itinerario</span>
-      <h2 class="sec-title ms">Planning</h2>
-      <p class="sec-sub">5 días · 3 países · elige cómo verlo</p>
-    </div>
-  </div>
-  <div class="pl-container">
+<div class="sec-inner"><div class="sec-hd">
+<span class="sec-label">Itinerario</span>
+<h2 class="sec-title ms">Planning</h2>
+<p class="sec-sub">5 días · 3 países · elige cómo verlo</p>
+</div></div>
+<div class="pl-container">
 <div class="pl-tabs" role="tablist">
 <button class="pl-tab pl-tab-active" onclick="plView(this,'all')" data-view="all">📅 Todos los días</button>
 <button class="pl-tab" onclick="plView(this,'day',0)" data-view="day">Mié 24</button>
@@ -3763,404 +3789,13 @@ footer{
 <button class="pl-tab" onclick="plView(this,'day',4)" data-view="day">Dom 28</button>
 <button class="pl-tab" onclick="plView(this,'timeline')" data-view="timeline">⏱ Línea de tiempo</button>
 </div>
-<div id="pl-all" class="pl-view pl-view-active">
-<div class="pl-day-block">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 1</span><span class="pl-day-flag">🇦🇹</span><span class="pl-day-title">MIÉRCOLES 24 · VIENA</span><span class="pl-day-km">~25,5 km</span></div>
-<div class="pl-table-wrap"><table class="pl-table"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">13:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Comida</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">14:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Comida</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">14:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Quedada Ruta Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">15:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">YPPENPLATZ</td><td class="pl-km">250M</td><td class="pl-total">250M</td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta</td><td class="pl-entorno">ZONA URBANA · CARRIL BICI · MUCHOS CRUCES</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUINSEL</td><td class="pl-km">6,5k</td><td class="pl-total">7K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegamos A La Isla Del Danubio</td><td class="pl-entorno">ZONA NATURALEZA · CARRIL BICI · MÁS ESPACIO MENOS GENTE</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">17:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">ZENTRUM</td><td class="pl-km">9K</td><td class="pl-total">16K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasamos Por El Centro Financiero De Viena</td><td class="pl-entorno">ZONA URBANA EDIFICIOS ALTOS · MEZCLA CARRILES CON ACERAS · TRÁFICO Y GENTE</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">OPERNRING</td><td class="pl-km">4K</td><td class="pl-total">20K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Comenzamos A Patinar Por El Anillo Turístico</td><td class="pl-entorno">ZONA URBANA Y TURÍSTICA · CARRIL BICI ALGÚN TRAMO ESTRECHO · TRÁFICO Y GENTE</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">2,5K</td><td class="pl-total">22,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegamos A La Plaza Más Importante De Viena</td><td class="pl-entorno">ZONA TURÍSTICA · EXPLANADA ASFALTADA · CORTADA AL TRÁFICO</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">19:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">3K</td><td class="pl-total">25,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegamos Al Hotel</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">20:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">21:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Cena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-day-block">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 2</span><span class="pl-day-flag">🇦🇹🇸🇰</span><span class="pl-day-title">JUEVES 25 · VIENA → BRATISLAVA</span><span class="pl-day-km">~65 km</span></div>
-<div class="pl-table-wrap"><table class="pl-table"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">07:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Salida Bus · 08:30 -  ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">DONAU CITY</td><td class="pl-km">12,5k</td><td class="pl-total">12,5k</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Bus Zona Inicio · Nos Ponemos Los Patines</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">09:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">DONAU CITY</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta · Grupo General 30K - Orth An Der Donau · Grupo Avanzado 70K - Bratislava</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">STEINSPORNBRÜCKE</td><td class="pl-km">6K</td><td class="pl-total">6K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">DONAUINSEL</td><td class="pl-km">7K</td><td class="pl-total">13K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasaremos Al Lado Del Final De La Isla Del Danubio Aunque Lo Veremos Ya Desde El Lado Norte Del Río, Habremos Pasado Una Zona Industrial Y Nos Adentramos En Una Zona Boscosa Muy Chula</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">EUROVELO6</td><td class="pl-km">5,5K</td><td class="pl-total">18,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasaremos Por Un Pequeño Tramo De 1,5K Que Es De Tierra, Los Patinadores Más Avanzados Pueden Pasarlo Con Relativa Facilidad Con Patines, Aunque Esto No Lo Recomendamos Para Todos</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">SCHÖNAU</td><td class="pl-km">1,5K</td><td class="pl-total">20K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">12:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">ORTH AN DER</td><td class="pl-km">7K</td><td class="pl-total">27K</td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Aquí La Mayoría Se Quedará Para Que Les Recoja El Bus, Harán 2Km Más Desde El Eurovelo6 Hasta El Parking Del Supermercado Penny Donde Estarán Los Dos Autobuses. · Llevarán Al Grupo A Bratislava Que Llegará Sobre Las 13:00 Y Comerán Y Harán Turismo Hasta Las 17:30</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">EUROVELO6</td><td class="pl-km">10K</td><td class="pl-total">37K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Habiendo Pasado El Schoss Eckartsau Nos Encontraremos Con Que De Nuevo El Camino Deja De Ser Asfatado Y Tendremos Que Quitarnos Los Patines Para Hacer 3K Andando. Este Camino Está Peor Que El Anterior, Lo Bueno Es Que Es Una Zona Bonita</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">14:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">STOPFENREUTH</td><td class="pl-km">3K</td><td class="pl-total">40K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">14:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HAINBURG</td><td class="pl-km">7K</td><td class="pl-total">47K</td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Parada Para Comer · A Orillas Del Danubio. · Antes Entramos En Una Zona Comercial Llamada Galleria Danubia Y Allí Compramos Algo De Comer</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">15:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HAINBURG</td><td class="pl-km">7K</td><td class="pl-total">47K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Nos Ponemos En Marcha De Nuevo A Realizar El Último Tramo, Que Debemos Decir Que Quizas Es El Que Menos Nos Gustó Por Los Suelos</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">WOLFSTHAL</td><td class="pl-km">6K</td><td class="pl-total">53K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasamos Por Este Pueblo Que Es El Último Austriaco Antes De Cruzar La Frontera. Aquí Hay Un Tramo De 200M De Suelo Empedrado</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">BRATISLAVA</td><td class="pl-km">12,5K</td><td class="pl-total">65,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegada Del Grupo De Avanzado A Bratislava</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">17:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">BRATISLAVA</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>Quedada Para Recogida Autobuses</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">BRATISLAVA</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>Salida Autobus Hacia Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">19:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">82K</td><td class="pl-total">82K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Hotel Exe Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">20:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">21:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">22:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">23:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">00:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-day-block">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 3</span><span class="pl-day-flag">🇸🇰</span><span class="pl-day-title">VIERNES 26 · ESLOVAQUIA + FNS</span><span class="pl-day-km">~42+27 km</span></div>
-<div class="pl-table-wrap"><table class="pl-table"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">07:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Salida Bus Viena > Hamuliakovo (95K) 1H30M ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">09:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">HAMULIAKOVO</td><td class="pl-km">95K</td><td class="pl-total">95K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegada Hamuliakovo</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">10:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">HAMULIAKOVO</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta · Grupo Medio Hasta Gabcikovo 28K (2H30M) · Grupo Avanzado Hasta Sap 42K (4H30) ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">CILISTOV</td><td class="pl-km">5,5K</td><td class="pl-total">5,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">KYSELICA</td><td class="pl-km">6,5K</td><td class="pl-total">12K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SULANY</td><td class="pl-km">5,5K</td><td class="pl-total">17,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">TRSTENÁ NA OSTROVE</td><td class="pl-km">6K</td><td class="pl-total">23,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">GABCIKOVO</td><td class="pl-km">6K</td><td class="pl-total">29,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegada A Gabcikovo</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">13:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SAP</td><td class="pl-km">9K</td><td class="pl-total">38,5K</td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Llegada A Sap · Coop Jednota Potraviny (Sap) · Comida ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">14:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SAP</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Quedada Para Salida Bus A Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">15:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SAP</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Salida Bus Sap > Viena (141K) 2H00M</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">17:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">141K</td><td class="pl-total">141K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Hotel Exe Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">18:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Tiempo Libre · Evaluar Si Encontramos Un Sitio Para Cenar</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">19:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Tiempo Libre · Evaluar Si Encontramos Un Sitio Para Cenar</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">20:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🌙</span>20:15 Salida Hacia Friday Night Skate · Hotel Exe >>> Heldenplatz (3,5K - 20Min)</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">21:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">3,5K</td><td class="pl-total">3,5K</td><td class="pl-concepto"><span class="pl-emoji">🌙</span>Friday Night Skate Vienna ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">22:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🌙</span>Friday Night Skate Vienna ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">23:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">20K</td><td class="pl-total">23,5K</td><td class="pl-concepto"><span class="pl-emoji">🌙</span>Final Friday Night Skate Vienna</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">00:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">3,5K</td><td class="pl-total">27K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Al Hotel Y Listos Para Morir</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-day-block">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 4</span><span class="pl-day-flag">🇭🇺</span><span class="pl-day-title">SÁBADO 27 · BUDAPEST</span><span class="pl-day-km">~27 km</span></div>
-<div class="pl-table-wrap"><table class="pl-table"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">07:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>07:00 - Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>08:00 - Salida Bus Viena > Budapest (245K) 3H30M ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km">245K</td><td class="pl-total">245K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">12:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>1Salida Ruta (27K)  5H</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">14:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>14:30 - Parada Para Comer</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">15:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>15:30 - Continua La Ruta</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">17:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>17:00 - Finalización Ruta · Tiempo Libre Para Turismo</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">19:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Cena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">20:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Cena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">21:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>21:00 Salida Bus Budapest > Viena (245K) 3H30M</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">01:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">245K</td><td class="pl-total">245K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>01:00 - Llegada Hotel Viena Exe</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-day-block">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 5</span><span class="pl-day-flag">🇦🇹</span><span class="pl-day-title">DOMINGO 28 · VIENA · Despedida</span><span class="pl-day-km">~23 km</span></div>
-<div class="pl-table-wrap"><table class="pl-table"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row " data-type="info"><td class="pl-time">07:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>…Zzz…</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">08:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>08:00 Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-hotel" data-type="hotel"><td class="pl-time">09:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🏨</span>Check Out</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">10:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta Viena (23K) 3H30M</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">MARGARETENGÜRTEL</td><td class="pl-km">3,5K</td><td class="pl-total">3,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">BRUNNENMARKT</td><td class="pl-km">2K</td><td class="pl-total">5,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:15</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">BELVEDERE</td><td class="pl-km">1,5K</td><td class="pl-total">7K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUKANAL</td><td class="pl-km">1,5k</td><td class="pl-total">8,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUKANAL</td><td class="pl-km">3k</td><td class="pl-total">11,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">PRATER</td><td class="pl-km">3k</td><td class="pl-total">14,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUKANAL</td><td class="pl-km">3k</td><td class="pl-total">17,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DOMKIRCHE</td><td class="pl-km">3k</td><td class="pl-total">20,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">14:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">2K</td><td class="pl-total">22,5K</td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Fin Ruta Viena · Despedida Y Cierre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">15:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Comida</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
+<div id="pl-all" class="pl-view pl-view-active"></div>
+<div id="pl-single" class="pl-view" style="display:none">
+<div class="pl-day-nav"><button id="pl-prev" class="pl-navbtn" onclick="plDayPrev()">◀</button><span id="pl-day-indicator" class="pl-day-indicator"></span><button id="pl-next" class="pl-navbtn" onclick="plDayNext()">▶</button></div>
+<div id="pl-single-body"></div>
 </div>
-<div id="pl-single" class="pl-view">
-<div class="pl-single-day" id="pl-day-0" style="display:none">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 1</span><span class="pl-day-flag">🇦🇹</span><span class="pl-day-title">MIÉRCOLES 24 · VIENA</span><span class="pl-day-km">~25,5 km</span></div>
-<div class="pl-table-wrap pl-table-full-wrap"><table class="pl-table pl-table-full"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">13:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Comida</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">14:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Comida</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">14:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Quedada Ruta Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">15:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">YPPENPLATZ</td><td class="pl-km">250M</td><td class="pl-total">250M</td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta</td><td class="pl-entorno">ZONA URBANA · CARRIL BICI · MUCHOS CRUCES</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUINSEL</td><td class="pl-km">6,5k</td><td class="pl-total">7K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegamos A La Isla Del Danubio</td><td class="pl-entorno">ZONA NATURALEZA · CARRIL BICI · MÁS ESPACIO MENOS GENTE</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">17:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">ZENTRUM</td><td class="pl-km">9K</td><td class="pl-total">16K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasamos Por El Centro Financiero De Viena</td><td class="pl-entorno">ZONA URBANA EDIFICIOS ALTOS · MEZCLA CARRILES CON ACERAS · TRÁFICO Y GENTE</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">OPERNRING</td><td class="pl-km">4K</td><td class="pl-total">20K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Comenzamos A Patinar Por El Anillo Turístico</td><td class="pl-entorno">ZONA URBANA Y TURÍSTICA · CARRIL BICI ALGÚN TRAMO ESTRECHO · TRÁFICO Y GENTE</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">2,5K</td><td class="pl-total">22,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegamos A La Plaza Más Importante De Viena</td><td class="pl-entorno">ZONA TURÍSTICA · EXPLANADA ASFALTADA · CORTADA AL TRÁFICO</td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">19:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">3K</td><td class="pl-total">25,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegamos Al Hotel</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">20:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">21:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Cena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-single-day" id="pl-day-1" style="display:none">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 2</span><span class="pl-day-flag">🇦🇹🇸🇰</span><span class="pl-day-title">JUEVES 25 · VIENA → BRATISLAVA</span><span class="pl-day-km">~65 km</span></div>
-<div class="pl-table-wrap pl-table-full-wrap"><table class="pl-table pl-table-full"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">07:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Salida Bus · 08:30 -  ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">DONAU CITY</td><td class="pl-km">12,5k</td><td class="pl-total">12,5k</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Bus Zona Inicio · Nos Ponemos Los Patines</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">09:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">DONAU CITY</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta · Grupo General 30K - Orth An Der Donau · Grupo Avanzado 70K - Bratislava</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">STEINSPORNBRÜCKE</td><td class="pl-km">6K</td><td class="pl-total">6K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">DONAUINSEL</td><td class="pl-km">7K</td><td class="pl-total">13K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasaremos Al Lado Del Final De La Isla Del Danubio Aunque Lo Veremos Ya Desde El Lado Norte Del Río, Habremos Pasado Una Zona Industrial Y Nos Adentramos En Una Zona Boscosa Muy Chula</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">EUROVELO6</td><td class="pl-km">5,5K</td><td class="pl-total">18,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasaremos Por Un Pequeño Tramo De 1,5K Que Es De Tierra, Los Patinadores Más Avanzados Pueden Pasarlo Con Relativa Facilidad Con Patines, Aunque Esto No Lo Recomendamos Para Todos</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">SCHÖNAU</td><td class="pl-km">1,5K</td><td class="pl-total">20K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">12:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">ORTH AN DER</td><td class="pl-km">7K</td><td class="pl-total">27K</td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Aquí La Mayoría Se Quedará Para Que Les Recoja El Bus, Harán 2Km Más Desde El Eurovelo6 Hasta El Parking Del Supermercado Penny Donde Estarán Los Dos Autobuses. · Llevarán Al Grupo A Bratislava Que Llegará Sobre Las 13:00 Y Comerán Y Harán Turismo Hasta Las 17:30</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">EUROVELO6</td><td class="pl-km">10K</td><td class="pl-total">37K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Habiendo Pasado El Schoss Eckartsau Nos Encontraremos Con Que De Nuevo El Camino Deja De Ser Asfatado Y Tendremos Que Quitarnos Los Patines Para Hacer 3K Andando. Este Camino Está Peor Que El Anterior, Lo Bueno Es Que Es Una Zona Bonita</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">14:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">STOPFENREUTH</td><td class="pl-km">3K</td><td class="pl-total">40K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">14:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HAINBURG</td><td class="pl-km">7K</td><td class="pl-total">47K</td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Parada Para Comer · A Orillas Del Danubio. · Antes Entramos En Una Zona Comercial Llamada Galleria Danubia Y Allí Compramos Algo De Comer</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">15:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HAINBURG</td><td class="pl-km">7K</td><td class="pl-total">47K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Nos Ponemos En Marcha De Nuevo A Realizar El Último Tramo, Que Debemos Decir Que Quizas Es El Que Menos Nos Gustó Por Los Suelos</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">WOLFSTHAL</td><td class="pl-km">6K</td><td class="pl-total">53K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Pasamos Por Este Pueblo Que Es El Último Austriaco Antes De Cruzar La Frontera. Aquí Hay Un Tramo De 200M De Suelo Empedrado</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">BRATISLAVA</td><td class="pl-km">12,5K</td><td class="pl-total">65,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegada Del Grupo De Avanzado A Bratislava</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">17:30</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">BRATISLAVA</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>Quedada Para Recogida Autobuses</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">BRATISLAVA</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>Salida Autobus Hacia Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">19:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">82K</td><td class="pl-total">82K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Hotel Exe Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">20:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">21:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">22:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">23:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">00:00</td><td class="pl-ciudad"><span class="pl-dim">—</span></td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>Tiempo Libre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-single-day" id="pl-day-2" style="display:none">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 3</span><span class="pl-day-flag">🇸🇰</span><span class="pl-day-title">VIERNES 26 · ESLOVAQUIA + FNS</span><span class="pl-day-km">~42+27 km</span></div>
-<div class="pl-table-wrap pl-table-full-wrap"><table class="pl-table pl-table-full"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">07:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Salida Bus Viena > Hamuliakovo (95K) 1H30M ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">09:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">HAMULIAKOVO</td><td class="pl-km">95K</td><td class="pl-total">95K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegada Hamuliakovo</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">10:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">HAMULIAKOVO</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta · Grupo Medio Hasta Gabcikovo 28K (2H30M) · Grupo Avanzado Hasta Sap 42K (4H30) ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">CILISTOV</td><td class="pl-km">5,5K</td><td class="pl-total">5,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">KYSELICA</td><td class="pl-km">6,5K</td><td class="pl-total">12K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SULANY</td><td class="pl-km">5,5K</td><td class="pl-total">17,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">TRSTENÁ NA OSTROVE</td><td class="pl-km">6K</td><td class="pl-total">23,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">GABCIKOVO</td><td class="pl-km">6K</td><td class="pl-total">29,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span>Llegada A Gabcikovo</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">13:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SAP</td><td class="pl-km">9K</td><td class="pl-total">38,5K</td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Llegada A Sap · Coop Jednota Potraviny (Sap) · Comida ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">14:30</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SAP</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Quedada Para Salida Bus A Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">15:00</td><td class="pl-ciudad">ESLOVAQUIA</td><td class="pl-loc">SAP</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Salida Bus Sap > Viena (141K) 2H00M</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">17:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">141K</td><td class="pl-total">141K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Hotel Exe Viena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">18:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Tiempo Libre · Evaluar Si Encontramos Un Sitio Para Cenar</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">19:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Tiempo Libre · Evaluar Si Encontramos Un Sitio Para Cenar</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">20:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🌙</span>20:15 Salida Hacia Friday Night Skate · Hotel Exe >>> Heldenplatz (3,5K - 20Min)</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">21:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">3,5K</td><td class="pl-total">3,5K</td><td class="pl-concepto"><span class="pl-emoji">🌙</span>Friday Night Skate Vienna ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">22:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🌙</span>Friday Night Skate Vienna ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-especial" data-type="especial"><td class="pl-time">23:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">20K</td><td class="pl-total">23,5K</td><td class="pl-concepto"><span class="pl-emoji">🌙</span>Final Friday Night Skate Vienna</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">00:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">3,5K</td><td class="pl-total">27K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>Llegada Al Hotel Y Listos Para Morir</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-single-day" id="pl-day-3" style="display:none">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 4</span><span class="pl-day-flag">🇭🇺</span><span class="pl-day-title">SÁBADO 27 · BUDAPEST</span><span class="pl-day-km">~27 km</span></div>
-<div class="pl-table-wrap pl-table-full-wrap"><table class="pl-table pl-table-full"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">07:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>07:00 - Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">08:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>08:00 - Salida Bus Viena > Budapest (245K) 3H30M ·</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km">245K</td><td class="pl-total">245K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">12:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>1Salida Ruta (27K)  5H</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">14:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>14:30 - Parada Para Comer</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">15:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>15:30 - Continua La Ruta</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">16:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-libre" data-type="libre"><td class="pl-time">17:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">💤</span>17:00 - Finalización Ruta · Tiempo Libre Para Turismo</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">18:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">19:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Cena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="cena"><td class="pl-time">20:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Cena</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">21:00</td><td class="pl-ciudad">BUDAPEST</td><td class="pl-loc">BUDAPEST</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🚌</span>21:00 Salida Bus Budapest > Viena (245K) 3H30M</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-bus" data-type="bus"><td class="pl-time">01:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km">245K</td><td class="pl-total">245K</td><td class="pl-concepto"><span class="pl-emoji">🚌</span>01:00 - Llegada Hotel Viena Exe</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-single-day" id="pl-day-4" style="display:none">
-<div class="pl-day-header" style="--dc:#2B3D2B" onclick="plToggleDay(this)"><span class="pl-day-num">Día 5</span><span class="pl-day-flag">🇦🇹</span><span class="pl-day-title">DOMINGO 28 · VIENA · Despedida</span><span class="pl-day-km">~23 km</span></div>
-<div class="pl-table-wrap pl-table-full-wrap"><table class="pl-table pl-table-full"><thead><tr>
-  <th class="pl-th-time">Hora</th>
-  <th class="pl-th-ciudad">País</th>
-  <th class="pl-th-loc">Lugar</th>
-  <th class="pl-th-km">Km</th>
-  <th class="pl-th-total">Total</th>
-  <th class="pl-th-concepto">Evento</th>
-  <th class="pl-th-entorno">Entorno</th>
-</tr></thead><tbody>
-<tr class="pl-row " data-type="info"><td class="pl-time">07:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">📍</span>…Zzz…</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-desayuno" data-type="desayuno"><td class="pl-time">08:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍳</span>08:00 Desayuno</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-hotel" data-type="hotel"><td class="pl-time">09:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🏨</span>Check Out</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">10:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HOTEL EXE</td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Salida Ruta Viena (23K) 3H30M</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">10:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">MARGARETENGÜRTEL</td><td class="pl-km">3,5K</td><td class="pl-total">3,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">BRUNNENMARKT</td><td class="pl-km">2K</td><td class="pl-total">5,5K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:15</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">BELVEDERE</td><td class="pl-km">1,5K</td><td class="pl-total">7K</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">11:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUKANAL</td><td class="pl-km">1,5k</td><td class="pl-total">8,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUKANAL</td><td class="pl-km">3k</td><td class="pl-total">11,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">12:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">PRATER</td><td class="pl-km">3k</td><td class="pl-total">14,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DONAUKANAL</td><td class="pl-km">3k</td><td class="pl-total">17,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row " data-type="info"><td class="pl-time">13:30</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">DOMKIRCHE</td><td class="pl-km">3k</td><td class="pl-total">20,5k</td><td class="pl-concepto"><span class="pl-emoji">📍</span></td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-ruta" data-type="ruta"><td class="pl-time">14:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc">HELDENPLATZ</td><td class="pl-km">2K</td><td class="pl-total">22,5K</td><td class="pl-concepto"><span class="pl-emoji">🛼</span>Fin Ruta Viena · Despedida Y Cierre</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-<tr class="pl-row tr-comida" data-type="comida"><td class="pl-time">15:00</td><td class="pl-ciudad">VIENA</td><td class="pl-loc"><span class="pl-dim">—</span></td><td class="pl-km"><span class="pl-dim">—</span></td><td class="pl-total"><span class="pl-dim">—</span></td><td class="pl-concepto"><span class="pl-emoji">🍽️</span>Comida</td><td class="pl-entorno"><span class="pl-dim">—</span></td></tr>
-</tbody></table></div></div>
-<div class="pl-day-nav">
-  <button class="pl-nav-btn" onclick="plDayPrev()" id="pl-prev">◀ Anterior</button>
-  <span id="pl-day-indicator"></span>
-  <button class="pl-nav-btn" onclick="plDayNext()" id="pl-next">Siguiente ▶</button>
+<div id="pl-timeline" class="pl-view" style="display:none"></div>
 </div>
-</div>
-<div id="pl-timeline" class="pl-view">
-<div class="pl-tl-col">
-<div class="pl-tl-head" style="--dc:#2B3D2B">🇦🇹 MIÉRCOLES 24 · VIENA</div>
-<div class="pl-tl-items">
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">13:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Comida</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">14:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Comida</span></div></div>
-<div class="pl-tl-item tr-ruta"><div class="pl-tl-dot"></div><div class="pl-tl-time">14:30</div><div class="pl-tl-body"><span class="pl-tl-ev">🛼 Quedada Ruta Viena</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-ruta"><div class="pl-tl-dot"></div><div class="pl-tl-time">15:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🛼 Salida Ruta</span><span class="pl-tl-loc">YPPENPLATZ</span><span class="pl-tl-km">+250M</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">16:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Llegamos A La Isla Del Danubio</span><span class="pl-tl-loc">DONAUINSEL</span><span class="pl-tl-km">+6,5k</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">17:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Pasamos Por El Centro Financiero De Viena</span><span class="pl-tl-loc">ZENTRUM</span><span class="pl-tl-km">+9K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">18:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Comenzamos A Patinar Por El Anillo Turístico</span><span class="pl-tl-loc">OPERNRING</span><span class="pl-tl-km">+4K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">18:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Llegamos A La Plaza Más Importante De Viena</span><span class="pl-tl-loc">HELDENPLATZ</span><span class="pl-tl-km">+2,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">19:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Llegamos Al Hotel</span><span class="pl-tl-loc">HOTEL EXE</span><span class="pl-tl-km">+3K</span></div></div>
-<div class="pl-tl-item tr-libre"><div class="pl-tl-dot"></div><div class="pl-tl-time">20:00</div><div class="pl-tl-body"><span class="pl-tl-ev">💤 Tiempo Libre</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">21:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Cena</span></div></div>
-</div></div>
-<div class="pl-tl-col">
-<div class="pl-tl-head" style="--dc:#2B3D2B">🇦🇹🇸🇰 JUEVES 25 · VIENA → BRATISLAVA</div>
-<div class="pl-tl-items">
-<div class="pl-tl-item tr-desayuno"><div class="pl-tl-dot"></div><div class="pl-tl-time">07:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍳 Desayuno</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">08:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Salida Bus · 08:30 -  ·</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">08:30</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Llegada Bus Zona Inicio · Nos Ponemos Los Patines</span><span class="pl-tl-loc">DONAU CITY</span><span class="pl-tl-km">+12,5k</span></div></div>
-<div class="pl-tl-item tr-ruta"><div class="pl-tl-dot"></div><div class="pl-tl-time">09:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🛼 Salida Ruta · Grupo General 30K - Orth An Der Donau · Grupo Avanzado 70K - Bratislava</span><span class="pl-tl-loc">DONAU CITY</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">10:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">STEINSPORNBRÜCKE</span><span class="pl-tl-km">+6K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">10:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Pasaremos Al Lado Del Final De La Isla Del Danubio Aunque Lo Veremos Ya Desde El Lado Norte Del Río, Habremos Pasado Una Zona Industrial Y Nos Adentramos En Una Zona Boscosa Muy Chula</span><span class="pl-tl-loc">DONAUINSEL</span><span class="pl-tl-km">+7K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Pasaremos Por Un Pequeño Tramo De 1,5K Que Es De Tierra, Los Patinadores Más Avanzados Pueden Pasarlo Con Relativa Facilidad Con Patines, Aunque Esto No Lo Recomendamos Para Todos</span><span class="pl-tl-loc">EUROVELO6</span><span class="pl-tl-km">+5,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">SCHÖNAU</span><span class="pl-tl-km">+1,5K</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">12:30</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Aquí La Mayoría Se Quedará Para Que Les Recoja El Bus, Harán 2Km Más Desde El Eurovelo6 Hasta El Parking Del Supermercado Penny Donde Estarán Los Dos Autobuses. · Llevarán Al Grupo A Bratislava Que Llegará Sobre Las 13:00 Y Comerán Y Harán Turismo Hasta Las 17:30</span><span class="pl-tl-loc">ORTH AN DER</span><span class="pl-tl-km">+7K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">13:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Habiendo Pasado El Schoss Eckartsau Nos Encontraremos Con Que De Nuevo El Camino Deja De Ser Asfatado Y Tendremos Que Quitarnos Los Patines Para Hacer 3K Andando. Este Camino Está Peor Que El Anterior, Lo Bueno Es Que Es Una Zona Bonita</span><span class="pl-tl-loc">EUROVELO6</span><span class="pl-tl-km">+10K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">14:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">STOPFENREUTH</span><span class="pl-tl-km">+3K</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">14:30</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Parada Para Comer · A Orillas Del Danubio. · Antes Entramos En Una Zona Comercial Llamada Galleria Danubia Y Allí Compramos Algo De Comer</span><span class="pl-tl-loc">HAINBURG</span><span class="pl-tl-km">+7K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">15:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Nos Ponemos En Marcha De Nuevo A Realizar El Último Tramo, Que Debemos Decir Que Quizas Es El Que Menos Nos Gustó Por Los Suelos</span><span class="pl-tl-loc">HAINBURG</span><span class="pl-tl-km">+7K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">16:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Pasamos Por Este Pueblo Que Es El Último Austriaco Antes De Cruzar La Frontera. Aquí Hay Un Tramo De 200M De Suelo Empedrado</span><span class="pl-tl-loc">WOLFSTHAL</span><span class="pl-tl-km">+6K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">16:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Llegada Del Grupo De Avanzado A Bratislava</span><span class="pl-tl-loc">BRATISLAVA</span><span class="pl-tl-km">+12,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">17:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Quedada Para Recogida Autobuses</span><span class="pl-tl-loc">BRATISLAVA</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">18:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Salida Autobus Hacia Viena</span><span class="pl-tl-loc">BRATISLAVA</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">19:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Llegada Hotel Exe Viena</span><span class="pl-tl-loc">HOTEL EXE</span><span class="pl-tl-km">+82K</span></div></div>
-<div class="pl-tl-item tr-libre"><div class="pl-tl-dot"></div><div class="pl-tl-time">20:00</div><div class="pl-tl-body"><span class="pl-tl-ev">💤 Tiempo Libre</span></div></div>
-<div class="pl-tl-item tr-libre"><div class="pl-tl-dot"></div><div class="pl-tl-time">21:00</div><div class="pl-tl-body"><span class="pl-tl-ev">💤 Tiempo Libre</span></div></div>
-<div class="pl-tl-item tr-libre"><div class="pl-tl-dot"></div><div class="pl-tl-time">22:00</div><div class="pl-tl-body"><span class="pl-tl-ev">💤 Tiempo Libre</span></div></div>
-<div class="pl-tl-item tr-libre"><div class="pl-tl-dot"></div><div class="pl-tl-time">23:00</div><div class="pl-tl-body"><span class="pl-tl-ev">💤 Tiempo Libre</span></div></div>
-<div class="pl-tl-item tr-libre"><div class="pl-tl-dot"></div><div class="pl-tl-time">00:00</div><div class="pl-tl-body"><span class="pl-tl-ev">💤 Tiempo Libre</span></div></div>
-</div></div>
-<div class="pl-tl-col">
-<div class="pl-tl-head" style="--dc:#2B3D2B">🇸🇰 VIERNES 26 · ESLOVAQUIA + FNS</div>
-<div class="pl-tl-items">
-<div class="pl-tl-item tr-desayuno"><div class="pl-tl-dot"></div><div class="pl-tl-time">07:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍳 Desayuno</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">08:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Salida Bus Viena > Hamuliakovo (95K) 1H30M ·</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">09:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Llegada Hamuliakovo</span><span class="pl-tl-loc">HAMULIAKOVO</span><span class="pl-tl-km">+95K</span></div></div>
-<div class="pl-tl-item tr-ruta"><div class="pl-tl-dot"></div><div class="pl-tl-time">10:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🛼 Salida Ruta · Grupo Medio Hasta Gabcikovo 28K (2H30M) · Grupo Avanzado Hasta Sap 42K (4H30) ·</span><span class="pl-tl-loc">HAMULIAKOVO</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">10:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">CILISTOV</span><span class="pl-tl-km">+5,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">KYSELICA</span><span class="pl-tl-km">+6,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">SULANY</span><span class="pl-tl-km">+5,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">12:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">TRSTENÁ NA OSTROVE</span><span class="pl-tl-km">+6K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">12:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 Llegada A Gabcikovo</span><span class="pl-tl-loc">GABCIKOVO</span><span class="pl-tl-km">+6K</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">13:30</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Llegada A Sap · Coop Jednota Potraviny (Sap) · Comida ·</span><span class="pl-tl-loc">SAP</span><span class="pl-tl-km">+9K</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">14:30</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Quedada Para Salida Bus A Viena</span><span class="pl-tl-loc">SAP</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">15:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Salida Bus Sap > Viena (141K) 2H00M</span><span class="pl-tl-loc">SAP</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">17:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Llegada Hotel Exe Viena</span><span class="pl-tl-loc">HOTEL EXE</span><span class="pl-tl-km">+141K</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">18:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Tiempo Libre · Evaluar Si Encontramos Un Sitio Para Cenar</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">19:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Tiempo Libre · Evaluar Si Encontramos Un Sitio Para Cenar</span></div></div>
-<div class="pl-tl-item tr-especial"><div class="pl-tl-dot"></div><div class="pl-tl-time">20:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🌙 20:15 Salida Hacia Friday Night Skate · Hotel Exe >>> Heldenplatz (3,5K - 20Min)</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-especial"><div class="pl-tl-dot"></div><div class="pl-tl-time">21:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🌙 Friday Night Skate Vienna ·</span><span class="pl-tl-loc">HELDENPLATZ</span><span class="pl-tl-km">+3,5K</span></div></div>
-<div class="pl-tl-item tr-especial"><div class="pl-tl-dot"></div><div class="pl-tl-time">22:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🌙 Friday Night Skate Vienna ·</span></div></div>
-<div class="pl-tl-item tr-especial"><div class="pl-tl-dot"></div><div class="pl-tl-time">23:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🌙 Final Friday Night Skate Vienna</span><span class="pl-tl-loc">HELDENPLATZ</span><span class="pl-tl-km">+20K</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">00:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 Llegada Al Hotel Y Listos Para Morir</span><span class="pl-tl-loc">HOTEL EXE</span><span class="pl-tl-km">+3,5K</span></div></div>
-</div></div>
-<div class="pl-tl-col">
-<div class="pl-tl-head" style="--dc:#2B3D2B">🇭🇺 SÁBADO 27 · BUDAPEST</div>
-<div class="pl-tl-items">
-<div class="pl-tl-item tr-desayuno"><div class="pl-tl-dot"></div><div class="pl-tl-time">07:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍳 07:00 - Desayuno</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">08:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 08:00 - Salida Bus Viena > Budapest (245K) 3H30M ·</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">BUDAPEST</span><span class="pl-tl-km">+245K</span></div></div>
-<div class="pl-tl-item tr-ruta"><div class="pl-tl-dot"></div><div class="pl-tl-time">12:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🛼 1Salida Ruta (27K)  5H</span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">13:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">14:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ 14:30 - Parada Para Comer</span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">15:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 15:30 - Continua La Ruta</span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">16:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item tr-libre"><div class="pl-tl-dot"></div><div class="pl-tl-time">17:00</div><div class="pl-tl-body"><span class="pl-tl-ev">💤 17:00 - Finalización Ruta · Tiempo Libre Para Turismo</span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">18:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">19:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Cena</span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">20:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Cena</span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">21:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 21:00 Salida Bus Budapest > Viena (245K) 3H30M</span><span class="pl-tl-loc">BUDAPEST</span></div></div>
-<div class="pl-tl-item tr-bus"><div class="pl-tl-dot"></div><div class="pl-tl-time">01:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🚌 01:00 - Llegada Hotel Viena Exe</span><span class="pl-tl-loc">HOTEL EXE</span><span class="pl-tl-km">+245K</span></div></div>
-</div></div>
-<div class="pl-tl-col">
-<div class="pl-tl-head" style="--dc:#2B3D2B">🇦🇹 DOMINGO 28 · VIENA · Despedida</div>
-<div class="pl-tl-items">
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">07:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 …Zzz…</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-desayuno"><div class="pl-tl-dot"></div><div class="pl-tl-time">08:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍳 08:00 Desayuno</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-hotel"><div class="pl-tl-dot"></div><div class="pl-tl-time">09:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🏨 Check Out</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item tr-ruta"><div class="pl-tl-dot"></div><div class="pl-tl-time">10:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🛼 Salida Ruta Viena (23K) 3H30M</span><span class="pl-tl-loc">HOTEL EXE</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">10:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">MARGARETENGÜRTEL</span><span class="pl-tl-km">+3,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">BRUNNENMARKT</span><span class="pl-tl-km">+2K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:15</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">BELVEDERE</span><span class="pl-tl-km">+1,5K</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">11:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">DONAUKANAL</span><span class="pl-tl-km">+1,5k</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">12:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">DONAUKANAL</span><span class="pl-tl-km">+3k</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">12:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">PRATER</span><span class="pl-tl-km">+3k</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">13:00</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">DONAUKANAL</span><span class="pl-tl-km">+3k</span></div></div>
-<div class="pl-tl-item "><div class="pl-tl-dot"></div><div class="pl-tl-time">13:30</div><div class="pl-tl-body"><span class="pl-tl-ev">📍 </span><span class="pl-tl-loc">DOMKIRCHE</span><span class="pl-tl-km">+3k</span></div></div>
-<div class="pl-tl-item tr-ruta"><div class="pl-tl-dot"></div><div class="pl-tl-time">14:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🛼 Fin Ruta Viena · Despedida Y Cierre</span><span class="pl-tl-loc">HELDENPLATZ</span><span class="pl-tl-km">+2K</span></div></div>
-<div class="pl-tl-item tr-comida"><div class="pl-tl-dot"></div><div class="pl-tl-time">15:00</div><div class="pl-tl-body"><span class="pl-tl-ev">🍽️ Comida</span></div></div>
-</div></div>
-</div>
-  </div>
 </section>
 
 <div class="divider"></div>
@@ -6117,62 +5752,131 @@ function filterByHab(hab, type) {
 }
 
 // ── PLANNING VIEW SWITCHER ──────────────────────
-let plCurrentDay = 0;
 const plDayCount = 5;
 
-function plView(btn, mode, dayIdx) {
-  // Deactivate all tabs
-  document.querySelectorAll('.pl-tab').forEach(t => t.classList.remove('pl-tab-active'));
-  if (btn) btn.classList.add('pl-tab-active');
-  
-  // Hide all views
-  document.querySelectorAll('.pl-view').forEach(v => {
-    v.classList.remove('pl-view-active');
-    v.style.display = 'none';
-  });
+var PL_DATA = {"mie": {"label": "Mié 24", "sub": "🇦🇹 Viena", "rows": [{"h": "13:00", "pais": "", "loc": "", "km": "", "tot": "", "con": "COMIDA", "ent": "", "t": "comida"}, {"h": "14:00", "pais": "", "loc": "", "km": "", "tot": "", "con": "COMIDA", "ent": "", "t": "comida"}, {"h": "14:30", "pais": "VIENA", "loc": "HOTEL EXE", "km": "0K", "tot": "", "con": "QUEDADA RUTA VIENA", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/5NW3fAueCSNwSc9g6"}, {"h": "15:00", "pais": "VIENA", "loc": "YPPENPLATZ", "km": "250M", "tot": "250M", "con": "SALIDA RUTA", "ent": "ZONA URBANA\nCARRIL BICI\nMUCHOS CRUCES", "t": "ruta", "url": "https://maps.app.goo.gl/C9YKN9D1BSvzHeHVA"}, {"h": "16:00", "pais": "VIENA", "loc": "DONAUINSEL", "km": "6,5k", "tot": "7K", "con": "LLEGAMOS A LA ISLA DEL DANUBIO", "ent": "ZONA NATURALEZA\nCARRIL BICI\nMÁS ESPACIO MENOS GENTE", "t": "ruta", "url": "https://maps.app.goo.gl/Nvr2ETr2YfgZwPge9"}, {"h": "17:00", "pais": "VIENA", "loc": "ZENTRUM", "km": "9K", "tot": "16K", "con": "PASAMOS POR EL CENTRO FINANCIERO DE VIENA", "ent": "ZONA URBANA EDIFICIOS ALTOS\nMEZCLA CARRILES CON ACERAS\nTRÁFICO Y GENTE", "t": "ruta", "url": "https://maps.app.goo.gl/aWKRaxr9STtR7wMf7"}, {"h": "18:00", "pais": "VIENA", "loc": "OPERNRING", "km": "4K", "tot": "20K", "con": "COMENZAMOS A PATINAR POR EL ANILLO TURÍSTICO", "ent": "ZONA URBANA Y TURÍSTICA\nCARRIL BICI ALGÚN TRAMO ESTRECHO\nTRÁFICO Y GENTE", "t": "ruta", "url": "https://maps.app.goo.gl/Rga2fQXU8Gzya9URA"}, {"h": "18:30", "pais": "VIENA", "loc": "HELDENPLATZ", "km": "2,5K", "tot": "22,5K", "con": "LLEGAMOS A LA PLAZA MÁS IMPORTANTE DE VIENA", "ent": "ZONA TURÍSTICA\nEXPLANADA ASFALTADA\nCORTADA AL TRÁFICO", "t": "ruta", "url": "https://maps.app.goo.gl/FfQoP6PZAyZStEq59"}, {"h": "19:30", "pais": "VIENA", "loc": "HOTEL EXE", "km": "3K", "tot": "25,5K", "con": "LLEGAMOS AL HOTEL", "ent": "", "t": "hotel", "url": "https://maps.app.goo.gl/5NW3fAueCSNwSc9g6"}, {"h": "20:00", "pais": "", "loc": "", "km": "", "tot": "", "con": "TIEMPO LIBRE", "ent": "", "t": "libre"}, {"h": "21:00", "pais": "", "loc": "", "km": "", "tot": "", "con": "CENA", "ent": "", "t": "comida"}], "rutas": [{"nombre": "Ruta urbana Viena", "km": "25,5 km", "horas": "≈ 4 h 30 m", "grupo": "Grupo único"}], "mapa": "https://www.google.com/maps/dir/Hotel+Exe+Vienna/Yppenplatz,+Wien/Donauinsel,+Wien/Heldenplatz,+Wien", "avisos": []}, "jue": {"label": "Jue 25", "sub": "🇦🇹🇸🇰 Viena → Bratislava", "rows": [{"h": "07:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "DESAYUNO", "ent": "", "t": "comida", "url": "https://maps.app.goo.gl/5NW3fAueCSNwSc9g6"}, {"h": "08:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "0k", "tot": "0k", "con": "SALIDA BUS", "ent": "", "t": "bus", "url": "https://maps.app.goo.gl/5NW3fAueCSNwSc9g6"}, {"h": "08:30", "pais": "VIENA", "loc": "DONAU CITY\nRadmotorikpark KaiserMühlen", "km": "12,5k", "tot": "12,5k", "con": "LLEGADA BUS ZONA INICIO\nNOS PONEMOS LOS PATINES", "ent": "", "t": "bus", "url": "https://maps.app.goo.gl/LyqAuHhVAbQzFVop7"}, {"h": "09:00", "pais": "VIENA", "loc": "DONAU CITY\nRadmotorikpark KaiserMühlen", "km": "0K", "tot": "0K", "con": "SALIDA RUTA\ngrupo general 30k - orth an der donau\ngrupo avanzado 70k - bratislava", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/LyqAuHhVAbQzFVop7"}, {"h": "10:00", "pais": "", "loc": "STEINSPORNBRÜCKE", "km": "6K", "tot": "6K", "con": "", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/hGfJPM8QuoysEhmP6"}, {"h": "10:30", "pais": "", "loc": "DONAUINSEL\nENDPUNKT", "km": "7K", "tot": "13K", "con": "PASAREMOS AL LADO DEL FINAL DE LA ISLA DEL DANUBIO AUNQUE LO VEREMOS YA DESDE EL LADO NORTE DEL RÍO, HABREMOS PASADO UNA ZONA INDUSTRIAL Y NOS ADENTRAMOS EN UNA ZONA BOSCOSA MUY CHULA", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/83NTZXxyiHqTd3i57"}, {"h": "11:00", "pais": "", "loc": "EUROVELO6\nOJO TIERRA!", "km": "5,5K", "tot": "18,5K", "con": "PASAREMOS POR UN PEQUEÑO TRAMO DE 1,5K QUE ES DE TIERRA, LOS PATINADORES MÁS AVANZADOS PUEDEN PASARLO CON RELATIVA FACILIDAD CON PATINES, AUNQUE ESTO NO LO RECOMENDAMOS PARA TODOS", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/w88Ld4xfPDU624497"}, {"h": "11:30", "pais": "", "loc": "SCHÖNAU\nAN DER DONAU", "km": "1,5K", "tot": "20K", "con": "", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/PbvY4ugTskrC35PE7"}, {"h": "12:30", "pais": "", "loc": "ORTH AN DER\nDONAU\nWr. Str. 19-21, 2304Orth an der Donau", "km": "7K", "tot": "27K", "con": "AQUÍ LA MAYORÍA SE QUEDARÁ PARA QUE LES RECOJA EL BUS, HARÁN 2KM MÁS DESDE EL EUROVELO6 HASTA EL PARKING DEL SUPERMERCADO PENNY DONDE ESTARÁN LOS DOS AUTOBUSES.\nLLEVARÁN AL GRUPO A BRATISLAVA QUE LLEGARÁ SOBRE LAS 13:00 Y COMERÁN Y HARÁN TURISMO HASTA LAS 17:30", "ent": "", "t": "bus", "url": "https://maps.app.goo.gl/DVA3TXeBqNTbvQgTA"}, {"h": "13:30", "pais": "", "loc": "EUROVELO6\nOJO TIERRA!", "km": "10K", "tot": "37K", "con": "HABIENDO PASADO EL SCHOSS ECKARTSAU NOS ENCONTRAREMOS CON QUE DE NUEVO EL CAMINO DEJA DE SER ASFATADO Y TENDREMOS QUE QUITARNOS LOS PATINES PARA HACER 3K ANDANDO. ESTE CAMINO ESTÁ PEOR QUE EL ANTERIOR, LO BUENO ES QUE ES UNA ZONA BONITA", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/jFYCTdGSqkpPmBhe7"}, {"h": "14:00", "pais": "", "loc": "STOPFENREUTH", "km": "3K", "tot": "40K", "con": "", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/E8yb9BoTKQJvCpXs9"}, {"h": "14:30", "pais": "", "loc": "HAINBURG\nAN DER DONAU", "km": "7K", "tot": "47K", "con": "PARADA PARA COMER\nA ORILLAS DEL DANUBIO.\nANTES ENTRAMOS EN UNA ZONA COMERCIAL LLAMADA GALLERIA DANUBIA Y ALLÍ COMPRAMOS ALGO DE COMER", "ent": "", "t": "comida", "url": "https://maps.app.goo.gl/LLhH8VvVi28hVY9EA"}, {"h": "15:30", "pais": "", "loc": "HAINBURG\nAN DER DONAU", "km": "7K", "tot": "47K", "con": "NOS PONEMOS EN MARCHA DE NUEVO A REALIZAR EL ÚLTIMO TRAMO, QUE DEBEMOS DECIR QUE QUIZAS ES EL QUE MENOS NOS GUSTÓ POR LOS SUELOS", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/LLhH8VvVi28hVY9EA"}, {"h": "16:00", "pais": "", "loc": "WOLFSTHAL", "km": "6K", "tot": "53K", "con": "PASAMOS POR ESTE PUEBLO QUE ES EL ÚLTIMO AUSTRIACO ANTES DE CRUZAR LA FRONTERA. AQUÍ HAY UN TRAMO DE 200M DE SUELO EMPEDRADO", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/7cLHb1qkc4onTuR56"}, {"h": "16:30", "pais": "BRATISLAVA", "loc": "BRATISLAVA\nMaximiliananova fontana", "km": "12,5K", "tot": "65,5K", "con": "LLEGADA DEL GRUPO DE AVANZADO A BRATISLAVA", "ent": "", "t": "ruta", "url": "https://maps.app.goo.gl/uDDmfTgZcL8K2Jpe9"}, {"h": "17:30", "pais": "BRATISLAVA", "loc": "BRATISLAVA\nUFO Most SNP Brigde", "km": "", "tot": "", "con": "QUEDADA PARA RECOGIDA AUTOBUSES", "ent": "", "t": "bus", "url": "https://maps.app.goo.gl/uDDmfTgZcL8K2Jpe9"}, {"h": "18:00", "pais": "BRATISLAVA", "loc": "BRATISLAVA\nUFO Most SNP Brigde", "km": "0K", "tot": "0K", "con": "SALIDA AUTOBUS HACIA VIENA", "ent": "", "t": "bus", "url": "https://maps.app.goo.gl/uDDmfTgZcL8K2Jpe9"}, {"h": "19:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "82K", "tot": "82K", "con": "LLEGADA HOTEL EXE VIENA", "ent": "", "t": "hotel", "url": "https://maps.app.goo.gl/5NW3fAueCSNwSc9g6"}, {"h": "20:00", "pais": "VIENA", "loc": "", "km": "", "tot": "", "con": "TIEMPO LIBRE", "ent": "", "t": "libre"}, {"h": "21:30", "pais": "VIENA", "loc": "CENTIMETER", "km": "2K", "tot": "", "con": "CENA\nse tarda en llegar unos 24 min andando", "ent": "", "t": "comida"}, {"h": "22:00", "pais": "VIENA", "loc": "", "km": "", "tot": "", "con": "CENA", "ent": "", "t": "comida"}, {"h": "23:00", "pais": "VIENA", "loc": "", "km": "", "tot": "", "con": "CENA", "ent": "", "t": "comida"}, {"h": "00:00", "pais": "", "loc": "", "km": "", "tot": "", "con": "FIESTA", "ent": "", "t": "libre"}, {"h": "04:00", "pais": "", "loc": "", "km": "", "tot": "", "con": "FIESTA", "ent": "", "t": "libre"}], "rutas": [{"nombre": "Grupo general", "km": "30 km", "horas": "≈ 3 h 30 m", "grupo": "hasta Orth an der Donau (bus a Bratislava)"}, {"nombre": "Grupo avanzado", "km": "70 km", "horas": "≈ 7 h", "grupo": "hasta Bratislava patinando"}], "mapa": "https://www.google.com/maps/dir/Radmotorikpark+KaiserMühlen,+Wien/Orth+an+der+Donau/Hainburg+an+der+Donau/Bratislava", "avisos": [["comida", "Grupo avanzado: se come en ruta. Lleva bocadillo, fruta o barritas. Se puede comprar en la Galleria Danubia (Hainburg, hacia el km 47)."]]}, "vie": {"label": "Vie 26", "sub": "🇸🇰 Eslovaquia", "rows": [{"h": "07:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "…zzz…", "ent": "", "t": "libre"}, {"h": "08:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "DESAYUNO", "ent": "", "t": "comida"}, {"h": "09:30", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "DESAYUNO", "ent": "", "t": "comida"}, {"h": "10:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "0K", "tot": "0K", "con": "SALIDA BUS VIENA > HAMULIAKOVO (95k) 1h30m", "ent": "", "t": "bus"}, {"h": "11:30", "pais": "ESLOVAQUIA", "loc": "HAMULIAKOVO\nParkovisko pri Dunaji", "km": "95K", "tot": "95K", "con": "LLEGADA HAMULIAKOVO", "ent": "", "t": "ruta"}, {"h": "12:00", "pais": "ESLOVAQUIA", "loc": "HAMULIAKOVO\nEUROVELO6", "km": "0K", "tot": "0K", "con": "SALIDA RUTA\nGrupo medio hasta Gabcikovo 28k (2h30m)\nGrupo avanzado hasta SAP 42k (4h30)", "ent": "", "t": "ruta"}, {"h": "12:30", "pais": "ESLOVAQUIA", "loc": "CILISTOV", "km": "5,5K", "tot": "5,5K", "con": "", "ent": "", "t": "ruta"}, {"h": "13:00", "pais": "ESLOVAQUIA", "loc": "KYSELICA", "km": "6,5K", "tot": "12K", "con": "", "ent": "", "t": "ruta"}, {"h": "13:30", "pais": "ESLOVAQUIA", "loc": "SULANY", "km": "5,5K", "tot": "17,5K", "con": "", "ent": "", "t": "ruta"}, {"h": "14:00", "pais": "ESLOVAQUIA", "loc": "TRSTENÁ NA OSTROVE", "km": "6K", "tot": "23,5K", "con": "", "ent": "", "t": "ruta"}, {"h": "14:30", "pais": "ESLOVAQUIA", "loc": "GABCIKOVO\nParkovisko", "km": "6K", "tot": "29,5K", "con": "LLEGADA A GABCIKOVO", "ent": "", "t": "ruta"}, {"h": "15:30", "pais": "ESLOVAQUIA", "loc": "SAP\nCOOP Jednota Potraviny", "km": "9K", "tot": "38,5K", "con": "LLEGADA A SAP\nCOOP Jednota Potraviny (SAP)\nCOMIDA", "ent": "", "t": "comida"}, {"h": "16:15", "pais": "ESLOVAQUIA", "loc": "SAP\nCOOP Jednota Potraviny", "km": "", "tot": "", "con": "QUEDADA PARA SALIDA BUS A VIENA", "ent": "", "t": "bus"}, {"h": "16:30", "pais": "ESLOVAQUIA", "loc": "SAP\nCOOP Jednota Potraviny", "km": "0K", "tot": "0K", "con": "SALIDA BUS SAP > VIENA (141k) 2h00m", "ent": "", "t": "bus"}, {"h": "18:30", "pais": "VIENA", "loc": "HOTEL EXE", "km": "141K", "tot": "141K", "con": "LLEGADA HOTEL EXE VIENA", "ent": "", "t": "hotel"}, {"h": "19:00", "pais": "", "loc": "", "km": "", "tot": "", "con": "CENA", "ent": "", "t": "comida"}, {"h": "20:15", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "QUEDADA Y SALIDA PARA LOS QUE QUIERAN VENIR A LA FRIDAY", "ent": "", "t": "ruta"}, {"h": "21:00", "pais": "VIENA", "loc": "HELDENPLATZ", "km": "3,5K", "tot": "3,5K", "con": "FRIDAY NIGHT SKATE VIENNA", "ent": "", "t": "especial"}, {"h": "22:00", "pais": "VIENA", "loc": "", "km": "", "tot": "", "con": "FRIDAY NIGHT SKATE VIENNA", "ent": "", "t": "especial"}, {"h": "23:00", "pais": "VIENA", "loc": "HELDENPLATZ", "km": "20K", "tot": "23,5K", "con": "FINAL FRIDAY NIGHT SKATE VIENNA", "ent": "", "t": "especial"}, {"h": "00:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "3,5K", "tot": "27K", "con": "LLEGADA AL HOTEL Y LISTOS PARA MORIR", "ent": "", "t": "hotel"}], "rutas": [{"nombre": "Grupo medio", "km": "28 km", "horas": "≈ 2 h 30 m", "grupo": "hasta Gabcikovo"}, {"nombre": "Grupo avanzado", "km": "42 km", "horas": "≈ 4 h 30 m", "grupo": "hasta SAP"}, {"nombre": "Friday Night Skate", "km": "≈ 20 km", "horas": "noche", "grupo": "opcional, en Viena"}], "mapa": "https://www.google.com/maps/dir/Hamuliakovo/Gabčíkovo/Sap,+Slovakia", "avisos": [["info", "Grupo medio: bus contratado de Gabcikovo a SAP para reunirse con el grupo y comer juntos."], ["comida", "La comida es en SAP (COOP Jednota Potraviny), a la llegada de la ruta."]]}, "sab": {"label": "Sáb 27", "sub": "🇭🇺 Budapest", "rows": [{"h": "07:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "07:00 - DESAYUNO", "ent": "", "t": "comida"}, {"h": "08:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "0K", "tot": "0K", "con": "08:00 - SALIDA BUS VIENA > BUDAPEST (245k) 3h30m", "ent": "", "t": "bus"}, {"h": "11:30", "pais": "BUDAPEST", "loc": "BUDAPEST\nÁllatkerti krt. 9-11, Budapest, 1146", "km": "245K", "tot": "245K", "con": "", "ent": "", "t": "ruta"}, {"h": "12:00", "pais": "BUDAPEST", "loc": "BUDAPEST\nBaños Széchenyi", "km": "0K", "tot": "0K", "con": "SALIDA RUTA (27k)  5h", "ent": "", "t": "ruta"}, {"h": "13:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "", "ent": "", "t": "ruta"}, {"h": "14:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "14:30 - PARADA PARA COMER", "ent": "", "t": "comida"}, {"h": "15:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "15:30 - CONTINUA LA RUTA", "ent": "", "t": "ruta"}, {"h": "16:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "", "ent": "", "t": "ruta"}, {"h": "17:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "17:00 - FINALIZACIÓN RUTA\nTIEMPO LIBRE PARA TURISMO", "ent": "", "t": "libre"}, {"h": "18:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "", "ent": "", "t": "ruta"}, {"h": "19:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "CENA", "ent": "", "t": "comida"}, {"h": "20:00", "pais": "BUDAPEST", "loc": "BUDAPEST", "km": "", "tot": "", "con": "CENA", "ent": "", "t": "comida"}, {"h": "21:00", "pais": "BUDAPEST", "loc": "BUDAPEST\nÁllatkerti krt. 9-11, Budapest, 1146", "km": "0K", "tot": "0K", "con": "21:00 SALIDA BUS BUDAPEST > VIENA (245k) 3h30m", "ent": "", "t": "bus"}, {"h": "01:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "245K", "tot": "245K", "con": "01:00 - LLEGADA HOTEL VIENA EXE", "ent": "", "t": "hotel"}], "rutas": [{"nombre": "Ruta Budapest", "km": "27 km", "horas": "≈ 5 h (con parada y turismo)", "grupo": "Grupo único"}], "mapa": "https://www.google.com/maps/dir/Széchenyi+Thermal+Bath,+Budapest/Hősök+tere,+Budapest/Danube+Promenade,+Budapest", "avisos": [["comida", "Se come en ruta (parada sobre las 14:30). Lleva algo o compra en Budapest antes de salir."], ["orgullo", "⚠️ Este sábado coincide con la Marcha del Orgullo de Budapest. Es posible que tengamos que adaptar el recorrido o los horarios sobre la marcha; atención a las indicaciones de los coordinadores."]]}, "dom": {"label": "Dom 28", "sub": "🇦🇹 Viena", "rows": [{"h": "07:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "…ZZZ…", "ent": "", "t": "libre"}, {"h": "08:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "08:00 DESAYUNO", "ent": "", "t": "comida"}, {"h": "09:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "", "tot": "", "con": "CHECK OUT", "ent": "", "t": "libre"}, {"h": "10:00", "pais": "VIENA", "loc": "HOTEL EXE", "km": "0K", "tot": "0K", "con": "SALIDA RUTA VIENA (23k) 3h30m", "ent": "", "t": "ruta"}, {"h": "10:30", "pais": "VIENA", "loc": "MARGARETENGÜRTEL", "km": "3,5K", "tot": "3,5K", "con": "", "ent": "", "t": "ruta"}, {"h": "11:00", "pais": "VIENA", "loc": "BRUNNENMARKT", "km": "2K", "tot": "5,5K", "con": "", "ent": "", "t": "ruta"}, {"h": "11:15", "pais": "VIENA", "loc": "BELVEDERE\nHochstrahlbrunnen", "km": "1,5K", "tot": "7K", "con": "", "ent": "", "t": "ruta"}, {"h": "11:30", "pais": "VIENA", "loc": "DONAUKANAL\nStrandbar Herrmann", "km": "1,5k", "tot": "8,5k", "con": "", "ent": "", "t": "ruta"}, {"h": "12:00", "pais": "VIENA", "loc": "DONAUKANAL\nStadionbrücke", "km": "3k", "tot": "11,5k", "con": "", "ent": "", "t": "ruta"}, {"h": "12:30", "pais": "VIENA", "loc": "PRATER\nPraterstern", "km": "3k", "tot": "14,5k", "con": "", "ent": "", "t": "ruta"}, {"h": "13:00", "pais": "VIENA", "loc": "DONAUKANAL\nWettsteinpark", "km": "3k", "tot": "17,5k", "con": "", "ent": "", "t": "ruta"}, {"h": "13:30", "pais": "VIENA", "loc": "DOMKIRCHE\nST. STEPHAN", "km": "3k", "tot": "20,5k", "con": "", "ent": "", "t": "ruta"}, {"h": "14:00", "pais": "VIENA", "loc": "HELDENPLATZ", "km": "2K", "tot": "22,5K", "con": "FIN RUTA VIENA\nDespedida y cierre", "ent": "", "t": "ruta"}, {"h": "15:00", "pais": "VIENA", "loc": "", "km": "", "tot": "", "con": "COMIDA", "ent": "", "t": "comida"}], "rutas": [{"nombre": "Ruta despedida Viena", "km": "23 km", "horas": "≈ 3 h 30 m", "grupo": "Grupo único"}], "mapa": "https://www.google.com/maps/dir/Margaretengürtel,+Wien/Belvedere,+Wien/Prater,+Wien/Heldenplatz,+Wien", "avisos": [["info", "Check-out a las 09:00. Las maletas se quedan en consigna del hotel; la ruta termina en Heldenplatz y se vuelve al hotel a recogerlas. (Duchas: pendiente de confirmar con el hotel.)"]]}};
+var PL_ORDER = ['mie','jue','vie','sab','dom'];
+var PL_NUM = ['Día 1','Día 2','Día 3','Día 4','Día 5'];
+var PL_DC = {mie:'#2B3D2B',jue:'#2B3D2B',vie:'#2B3D2B',sab:'#2B3D2B',dom:'#2B3D2B'};
+var plCurrentDay = 0;
 
-  if (mode === 'all') {
-    const v = document.getElementById('pl-all');
-    v.style.display = 'block'; v.classList.add('pl-view-active');
-  } else if (mode === 'day') {
-    plCurrentDay = dayIdx || 0;
-    const v = document.getElementById('pl-single');
-    v.style.display = 'block'; v.classList.add('pl-view-active');
-    plShowDay(plCurrentDay);
-  } else if (mode === 'timeline') {
-    const v = document.getElementById('pl-timeline');
-    v.style.display = 'flex'; v.classList.add('pl-view-active');
-  }
+function plIcon(r){
+  var con=(r.con||'').toUpperCase(), t=r.t, ic=null;
+  // por concepto (más específico)
+  if(con.indexOf('QUEDADA')>=0) ic='quedada';
+  else if(con.indexOf('SALIDA RUTA')>=0||con.indexOf('SALIDA BUS')<0&&con.indexOf('SALIDA')>=0&&t==='ruta') ic='salida';
+  else if(con.indexOf('TIEMPO LIBRE')>=0||con.indexOf('CHECK OUT')>=0) ic='freetime';
+  else if(con.indexOf('PARADA PARA COMER')>=0||con.indexOf('PARADA PARA FOTO')>=0&&false) ic='comida';
+  else if(con.indexOf('FOTO')>=0) ic='parada_foto';
+  else if(con.indexOf('PASAMOS POR')>=0||con.indexOf('PASAREMOS')>=0||con.indexOf('LLEGAMOS A')>=0) ic='pasarpor';
+  // por tipo (genérico)
+  else if(t==='bus') ic='autobus';
+  else if(t==='comida') ic='comida';
+  else if(t==='hotel') ic='hotel';
+  else if(t==='ruta') ic='salida';
+  if(ic) return '<img class="pl-ico" src="icos/'+ic+'.svg" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode(plEmojiFb(\''+t+'\')))">';
+  return '<span class="pl-emoji">'+plEmojiFb(t)+'</span>';
+}
+function plEmojiFb(t){return {ruta:'🛼',bus:'🚌',comida:'🍽️',especial:'🌙',hotel:'🏨',libre:'💤'}[t]||'•';}
+function plEsc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function plCell(v){return v?plEsc(v):'<span class="pl-dim">—</span>';}
+
+function plRoutesBox(d){
+  var info = PL_DATA[d];
+  var chips = info.rutas.map(function(r){
+    return '<div class="pl-route"><span class="pl-route-name">'+plEsc(r.nombre)+'</span>'
+      +'<span class="pl-route-km">'+plEsc(r.km)+'</span>'
+      +'<span class="pl-route-h">'+plEsc(r.horas)+'</span>'
+      +'<span class="pl-route-g">'+plEsc(r.grupo)+'</span></div>';
+  }).join('');
+  var avisos = (info.avisos||[]).map(function(a){
+    var cls = a[0]==='orgullo'?'pl-aviso-warn':(a[0]==='comida'?'pl-aviso-food':'pl-aviso-info');
+    var ic = a[0]==='orgullo'?'🏳️‍🌈':(a[0]==='comida'?'🥪':'ℹ️');
+    return '<div class="pl-aviso '+cls+'"><span>'+ic+'</span><span>'+plEsc(a[1])+'</span></div>';
+  }).join('');
+  var mapbtn = info.mapa?'<a class="pl-mapbtn" href="'+info.mapa+'" target="_blank" rel="noopener">🗺️ Ver ruta en Google Maps</a>':'';
+  return '<div class="pl-routes-box"><div class="pl-routes-row">'+chips+'</div>'+avisos+mapbtn+'</div>';
 }
 
-function plShowDay(idx) {
-  document.querySelectorAll('.pl-single-day').forEach(d => d.style.display = 'none');
-  const panel = document.getElementById('pl-day-' + idx);
-  if (panel) panel.style.display = 'block';
-  const ind = document.getElementById('pl-day-indicator');
-  const dates = ['Mié 24','Jue 25','Vie 26','Sáb 27','Dom 28'];
-  if (ind) ind.textContent = (idx + 1) + ' / ' + plDayCount + ' · ' + (dates[idx] || '');
-  document.getElementById('pl-prev').disabled = idx === 0;
-  document.getElementById('pl-next').disabled = idx === plDayCount - 1;
+function plTable(d){
+  var rows = PL_DATA[d].rows.map(function(r){
+    var locTxt = r.loc.split('\n').map(plEsc).join('<br>');
+    var loc = r.url
+      ? '<a class="pl-maplink" href="'+r.url+'" target="_blank" rel="noopener">'+locTxt+'<span class="pl-pin">📍</span></a>'
+      : locTxt;
+    var con = r.con?(plIcon(r)+r.con.split('\n').map(plEsc).join('<br>')):'<span class="pl-dim">—</span>';
+    return '<tr class="pl-row tr-'+r.t+'" data-type="'+r.t+'">'
+      +'<td class="pl-time">'+plCell(r.h)+'</td>'
+      +'<td class="pl-loc">'+(loc||'<span class="pl-dim">—</span>')+'</td>'
+      +'<td class="pl-km">'+plCell(r.km)+'</td>'
+      +'<td class="pl-total">'+plCell(r.tot)+'</td>'
+      +'<td class="pl-concepto">'+con+'</td>'
+      +'</tr>';
+  }).join('');
+  return '<div class="pl-table-wrap"><table class="pl-table"><thead><tr>'
+    +'<th class="pl-th-time">Hora</th><th class="pl-th-loc">Lugar</th>'
+    +'<th class="pl-th-km">Km</th><th class="pl-th-total">Total</th>'
+    +'<th class="pl-th-concepto">Evento</th>'
+    +'</tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 
-function plDayNext() {
-  if (plCurrentDay < plDayCount - 1) { plCurrentDay++; plShowDay(plCurrentDay); }
-}
-function plDayPrev() {
-  if (plCurrentDay > 0) { plCurrentDay--; plShowDay(plCurrentDay); }
+function plDayBlock(idx, open){
+  var d = PL_ORDER[idx], info = PL_DATA[d];
+  var flag = info.sub.match(/\p{Emoji}/u) ? info.sub.split(' ')[0] : '';
+  return '<div class="pl-day-block'+(open?' open':'')+'">'
+    +'<div class="pl-day-header" style="--dc:'+PL_DC[d]+'" onclick="plToggleDay(this)">'
+    +'<span class="pl-day-num">'+PL_NUM[idx]+'</span>'
+    +'<span class="pl-day-title">'+plEsc(info.sub.toUpperCase())+'</span>'
+    +'<span class="pl-day-km">'+plEsc(info.rutas[0].km)+'</span></div>'
+    +'<div class="pl-day-body">'+plRoutesBox(d)+plTable(d)+'</div></div>';
 }
 
-
-// Planning accordion
-function plToggleDay(header) {
-  const block = header.closest('.pl-day-block');
-  // Close all others in the same view
-  block.closest('.pl-view').querySelectorAll('.pl-day-block').forEach(b => {
-    if (b !== block) b.classList.remove('open');
-  });
-  block.classList.toggle('open');
+function plRenderAll(){
+  document.getElementById('pl-all').innerHTML =
+    PL_ORDER.map(function(_,i){return plDayBlock(i,false);}).join('');
 }
+function plShowDay(idx){
+  plCurrentDay = (idx+5)%5;
+  document.getElementById('pl-single-body').innerHTML = plDayBlock(plCurrentDay, true);
+  document.getElementById('pl-day-indicator').textContent =
+    PL_NUM[plCurrentDay]+' · '+PL_DATA[PL_ORDER[plCurrentDay]].sub;
+}
+function plDayNext(){plShowDay(plCurrentDay+1);}
+function plDayPrev(){plShowDay(plCurrentDay-1);}
+
+function plRenderTimeline(){
+  var cols = PL_ORDER.map(function(d,i){
+    var info = PL_DATA[d];
+    var items = info.rows.filter(function(r){return r.h;}).map(function(r){
+      return '<div class="pl-tl-item tr-'+r.t+'"><span class="pl-tl-dot"></span>'
+        +'<span class="pl-tl-time">'+plEsc(r.h)+'</span>'
+        +'<span class="pl-tl-con">'+plIcon(r)
+        +plEsc((r.con||r.loc).split('\n')[0])+'</span></div>';
+    }).join('');
+    return '<div class="pl-tl-col"><div class="pl-tl-head">'+plEsc(info.label)+'<br><span>'+plEsc(info.sub)+'</span></div>'+items+'</div>';
+  }).join('');
+  document.getElementById('pl-timeline').innerHTML = '<div class="pl-tl-scroll">'+cols+'</div>';
+}
+
+function plToggleDay(header){
+  var block = header.parentElement;
+  var open = block.classList.contains('open');
+  block.parentElement.querySelectorAll('.pl-day-block').forEach(function(b){b.classList.remove('open');});
+  if(!open) block.classList.add('open');
+}
+
+function plView(btn, mode, dayIdx){
+  document.querySelectorAll('.pl-tab').forEach(function(t){t.classList.remove('pl-tab-active');});
+  if(btn) btn.classList.add('pl-tab-active');
+  document.querySelectorAll('.pl-view').forEach(function(v){v.classList.remove('pl-view-active');v.style.display='none';});
+  var id = mode==='all'?'pl-all':(mode==='timeline'?'pl-timeline':'pl-single');
+  var v = document.getElementById(id);
+  v.style.display='block'; v.classList.add('pl-view-active');
+  if(mode==='day') plShowDay(dayIdx||0);
+  if(mode==='timeline') plRenderTimeline();
+}
+
+document.addEventListener('DOMContentLoaded', function(){ plRenderAll(); });
 
 </script>
 
