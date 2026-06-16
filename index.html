@@ -270,7 +270,7 @@ font-weight:400;}
 .tr-especial td{background:rgba(192,57,43,.08)}
 
 /* Column widths */
-.pl-th-time,.pl-time{width:52px;white-space:nowrap;color:rgba(212,160,23,.8)!important;font-weight:700}
+.pl-th-time,.pl-time{color:var(--gold-l);font-family:"Bogart",monospace;font-weight:700;font-size:1rem}
 .pl-th-loc,.pl-loc{width:140px;color:var(--cream)!important}
 .pl-th-km,.pl-km{width:58px;text-align:right;white-space:nowrap;color:var(--gold-l)!important;font-weight:700}
 .pl-th-total,.pl-total{width:62px;text-align:right;white-space:nowrap;color:var(--cream-d)!important;font-size:.75rem}
@@ -1349,6 +1349,18 @@ footer{
 .pl-maplink{color:var(--gold);text-decoration:none;border-bottom:1px dotted rgba(212,160,23,.5);transition:color .2s}
 .pl-maplink:hover{color:var(--gold-l);border-bottom-color:var(--gold-l)}
 .pl-pin{font-size:.8em;margin-left:4px;opacity:.85;border:none}
+
+/* Planning v3: icono columna, banderas, hover lugar */
+.pl-th-icon{width:48px}
+.pl-iconcell{text-align:center;width:48px;padding:4px 2px!important}
+.pl-iconcell .pl-ico{width:36px;height:36px;margin:0;vertical-align:middle}
+.pl-iconcell .pl-emoji{font-size:1.6rem;margin:0}
+.pl-flag{margin-right:7px;font-size:1.1em;vertical-align:-1px}
+/* Lugar: efecto hover tipo menú (rectángulo dorado sube de abajo) */
+.pl-loc .pl-maplink{position:relative;overflow:hidden;z-index:1;display:inline-block;padding:3px 7px;border-radius:4px;border-bottom:none}
+.pl-loc .pl-maplink::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:4px;background:linear-gradient(180deg,rgba(212,160,23,.22),rgba(212,160,23,.1));transform:scaleY(0);transform-origin:bottom;transition:transform .25s cubic-bezier(.33,1,.5,1)}
+.pl-loc .pl-maplink:hover::before{transform:scaleY(1)}
+.pl-loc .pl-maplink:hover{color:var(--gold-l)}
 </style>
 </head>
 <body>
@@ -4636,7 +4648,7 @@ footer{
   <!-- START SCREEN -->
   <div id="test-start" class="test-screen">
     <div class="test-start-card">
-      <div class="test-start-icon">🛼</div>
+      <div class="test-start-icon"><img src="images/keko_test.png" alt="" style="width:120px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 6px 16px rgba(0,0,0,.4))" onerror="this.replaceWith(document.createTextNode('🛼'))"></div>
       <h3 class="test-start-title ms">¿Estás listo?</h3>
       <p class="test-start-desc">20 preguntas sobre el Viaje por el Danubio 2026.<br>Cada respuesta correcta suma puntos. ¡Cuanto más rápido, más puntos!</p>
       <div class="test-rules">
@@ -5762,29 +5774,34 @@ var PL_NUM = ['Día 1','Día 2','Día 3','Día 4','Día 5'];
 var PL_DC = {mie:'#2B3D2B',jue:'#2B3D2B',vie:'#2B3D2B',sab:'#2B3D2B',dom:'#2B3D2B'};
 var plCurrentDay = 0;
 
-function plIcon(r){
+function plIconName(r){
   var con=(r.con||'').toUpperCase(), t=r.t, ic=null;
-  // ── por concepto (específico) ──
   if(/QUEDADA/.test(con)) ic='paradaen';
   else if(/DESAYUNO/.test(con)) ic='desayuno';
   else if(/\bCENA\b/.test(con)) ic='cena';
   else if(/COMER|COMIDA|LLEGADA A SAP/.test(con)) ic='comida';
-  else if(/FRIDAY NIGHT/.test(con)) ic='fiesta';
-  else if(/FIESTA/.test(con)) ic='fiesta';
+  else if(/FRIDAY NIGHT|FIESTA/.test(con)) ic='fiesta';
   else if(/TIEMPO LIBRE|CHECK OUT/.test(con)) ic='freetime';
-  else if(/ZZZ|LISTOS PARA MORIR/.test(con)) ic='dormir';
+  else if(/ZZZ|DORMIR|LISTOS PARA MORIR/.test(con)) ic='dormir';
   else if(/TIERRA|ARENA|DEJA DE SER ASFA|SUELO EMPEDRADO|QUITARNOS LOS PATINES/.test(con)) ic='tierra';
   else if(/FIN RUTA|FINALIZACIÓN RUTA|LLEGADA DEL GRUPO|LLEGADA A GABCIKOVO|LLEGADA HAMULIAKOVO/.test(con)) ic='meta';
   else if(/SALIDA RUTA|SALIDA PARA LOS QUE|COMENZAMOS A PATINAR/.test(con)) ic='salida';
   else if(/PASAMOS POR|PASAREMOS|LLEGAMOS A|LLEGAMOS AL|NOS PONEMOS EN MARCHA/.test(con)) ic='pasarpor';
-  // ── por tipo (genérico) ──
   else if(t==='bus') ic='autobus';
   else if(t==='comida') ic='comida';
   else if(t==='hotel') ic='hotel';
   else if(t==='ruta') ic='salida';
   else if(t==='libre') ic='dormir';
+  return ic;
+}
+function plIconCell(r){
+  var ic=plIconName(r), t=r.t;
   if(ic) return '<img class="pl-ico" src="icos/'+ic+'.svg" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode(plEmojiFb(\''+t+'\')))">';
   return '<span class="pl-emoji">'+plEmojiFb(t)+'</span>';
+}
+function plFlag(pais){
+  var f={'VIENA':'🇦🇹','BRATISLAVA':'🇸🇰','ESLOVAQUIA':'🇸🇰','BUDAPEST':'🇭🇺'};
+  return f[(pais||'').toUpperCase()]||'';
 }
 function plEmojiFb(t){return {ruta:'🛼',bus:'🚌',comida:'🍽️',especial:'🌙',hotel:'🏨',libre:'💤'}[t]||'•';}
 function plEsc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -5810,22 +5827,27 @@ function plRoutesBox(d){
 function plTable(d){
   var rows = PL_DATA[d].rows.map(function(r){
     var locTxt = r.loc.split('\n').map(plEsc).join('<br>');
-    var loc = r.url
-      ? '<a class="pl-maplink" href="'+r.url+'" target="_blank" rel="noopener">'+locTxt+'<span class="pl-pin">📍</span></a>'
-      : locTxt;
-    var con = r.con?(plIcon(r)+r.con.split('\n').map(plEsc).join('<br>')):'<span class="pl-dim">—</span>';
+    var flag = plFlag(r.pais);
+    var flagHtml = flag?'<span class="pl-flag">'+flag+'</span>':'';
+    var loc = r.loc
+      ? (r.url
+        ? '<a class="pl-maplink" href="'+r.url+'" target="_blank" rel="noopener">'+flagHtml+locTxt+'<span class="pl-pin">📍</span></a>'
+        : flagHtml+locTxt)
+      : '<span class="pl-dim">—</span>';
+    var con = r.con?r.con.split('\n').map(plEsc).join('<br>'):'<span class="pl-dim">—</span>';
     return '<tr class="pl-row tr-'+r.t+'" data-type="'+r.t+'">'
       +'<td class="pl-time">'+plCell(r.h)+'</td>'
-      +'<td class="pl-loc">'+(loc||'<span class="pl-dim">—</span>')+'</td>'
+      +'<td class="pl-loc">'+loc+'</td>'
       +'<td class="pl-km">'+plCell(r.km)+'</td>'
       +'<td class="pl-total">'+plCell(r.tot)+'</td>'
+      +'<td class="pl-iconcell">'+plIconCell(r)+'</td>'
       +'<td class="pl-concepto">'+con+'</td>'
       +'</tr>';
   }).join('');
   return '<div class="pl-table-wrap"><table class="pl-table"><thead><tr>'
     +'<th class="pl-th-time">Hora</th><th class="pl-th-loc">Lugar</th>'
     +'<th class="pl-th-km">Km</th><th class="pl-th-total">Total</th>'
-    +'<th class="pl-th-concepto">Evento</th>'
+    +'<th class="pl-th-icon"></th><th class="pl-th-concepto">Evento</th>'
     +'</tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 
@@ -5859,7 +5881,7 @@ function plRenderTimeline(){
     var items = info.rows.filter(function(r){return r.h;}).map(function(r){
       return '<div class="pl-tl-item tr-'+r.t+'"><span class="pl-tl-dot"></span>'
         +'<span class="pl-tl-time">'+plEsc(r.h)+'</span>'
-        +'<span class="pl-tl-con">'+plIcon(r)
+        +'<span class="pl-tl-con">'+plIconCell(r)
         +plEsc((r.con||r.loc).split('\n')[0])+'</span></div>';
     }).join('');
     return '<div class="pl-tl-col"><div class="pl-tl-head">'+plEsc(info.label)+'<br><span>'+plEsc(info.sub)+'</span></div>'+items+'</div>';
